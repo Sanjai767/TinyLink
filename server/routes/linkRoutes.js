@@ -51,6 +51,7 @@ router.get("/links/:code", async (req, res) => {
 router.delete("/links/:code", async (req, res) => {
   const link = await Link.findOneAndDelete({ code: req.params.code });
   if (!link) return res.status(404).json({ error: "Not found" });
+
   res.json({ success: true });
 });
 

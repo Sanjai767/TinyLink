@@ -1,4 +1,3 @@
-// models/Link.js
 import mongoose from "mongoose";
 
 const linkSchema = new mongoose.Schema({
@@ -9,5 +8,4 @@ const linkSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-const Link = mongoose.model("Link", linkSchema);
-export default Link;
+export default mongoose.model("Link", linkSchema);

@@ -1,27 +1,20 @@
-// server.js
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import path from "path";
 import mongoose from "mongoose";
-import { fileURLToPath } from "url";
 
 import linkRoutes from "./routes/linkRoutes.js";
 import Link from "./models/Link.js";
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
 
 /* MIDDLEWARE ------------------------------------- */
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
 
-/* HEALTH CHECK ----------------------------------- */
+/* SIMPLE TEST ------------------------------------ */
 app.get("/hello", (req, res) => {
   res.send("Hello from server!");
 });
@@ -37,7 +30,6 @@ app.use("/api", linkRoutes);
 app.get("/:code", async (req, res) => {
   try {
     const link = await Link.findOne({ code: req.params.code });
-
     if (!link) return res.status(404).send("Not Found");
 
     link.clickCount += 1;
@@ -58,7 +50,7 @@ async function startServer() {
     console.log("MongoDB Connected");
 
     const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`🚀 Server running on PORT ${PORT}`));
+    app.listen(PORT, () => console.log(`🚀 Server running at PORT ${PORT}`));
   } catch (err) {
     console.error("DB Error:", err.message);
   }

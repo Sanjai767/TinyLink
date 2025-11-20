@@ -3,16 +3,17 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
-import { fileURLToPath } from "url";
 import mongoose from "mongoose";
+import { fileURLToPath } from "url";
 
 import linkRoutes from "./routes/linkRoutes.js";
 import Link from "./models/Link.js";
 
+dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
 const app = express();
 
 /* MIDDLEWARE ------------------------------------- */
@@ -21,6 +22,10 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 /* HEALTH CHECK ----------------------------------- */
+app.get("/hello", (req, res) => {
+  res.send("Hello from server!");
+});
+
 app.get("/healthz", (req, res) => {
   res.json({ ok: true, version: "1.0" });
 });
@@ -49,7 +54,7 @@ app.get("/:code", async (req, res) => {
 /* START SERVER ----------------------------------- */
 async function startServer() {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URL);
     console.log("MongoDB Connected");
 
     const PORT = process.env.PORT || 5000;

@@ -1,4 +1,3 @@
-// routes/linkRoutes.mjs
 import express from "express";
 import { nanoid } from "nanoid";
 import Link from "../models/Link.js";
@@ -14,7 +13,7 @@ const isValidUrl = (url) => {
   }
 };
 
-/* CREATE LINK -------------------------------------- */
+/* CREATE LINK */
 router.post("/links", async (req, res) => {
   try {
     const { targetUrl, customCode } = req.body;
@@ -26,36 +25,32 @@ router.post("/links", async (req, res) => {
     const code = customCode || nanoid(6);
 
     const exists = await Link.findOne({ code });
-    if (exists) return res.status(409).json({ error: "Code already exists" });
+    if (exists) return res.status(409).json({ error: "Code exists" });
 
     const link = await Link.create({ code, targetUrl });
     res.status(201).json(link);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Server error" });
   }
 });
 
-/* LIST ALL LINKS ----------------------------------- */
+/* LIST ALL LINKS */
 router.get("/links", async (req, res) => {
   const links = await Link.find().sort({ createdAt: -1 });
   res.json(links);
 });
 
-/* GET STATS for ONE LINK ---------------------------- */
+/* GET ONE LINK */
 router.get("/links/:code", async (req, res) => {
   const link = await Link.findOne({ code: req.params.code });
-
   if (!link) return res.status(404).json({ error: "Not found" });
-
   res.json(link);
 });
 
-/* DELETE LINK -------------------------------------- */
+/* DELETE LINK */
 router.delete("/links/:code", async (req, res) => {
   const link = await Link.findOneAndDelete({ code: req.params.code });
-
   if (!link) return res.status(404).json({ error: "Not found" });
-
   res.json({ success: true });
 });
 

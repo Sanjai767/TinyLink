@@ -1,15 +1,14 @@
-// server.mjs
+// server.js
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import mongoose from "mongoose";
 
-import { connectDB } from "./config/db.js";
 import linkRoutes from "./routes/linkRoutes.js";
 import Link from "./models/Link.js";
 
-// ES module dirname fix
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -41,13 +40,23 @@ app.get("/:code", async (req, res) => {
     await link.save();
 
     return res.redirect(302, link.targetUrl);
-  } catch {
+  } catch (err) {
+    console.error(err);
     return res.status(500).send("Server Error");
   }
 });
 
 /* START SERVER ----------------------------------- */
-connectDB().then(() => {
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`🚀 Server running on PORT ${PORT}`));
-});
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB Connected");
+
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`🚀 Server running on PORT ${PORT}`));
+  } catch (err) {
+    console.error("DB Error:", err.message);
+  }
+}
+
+startServer();
